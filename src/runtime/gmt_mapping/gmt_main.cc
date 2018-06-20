@@ -22,35 +22,14 @@
 //
 //===----------------------------------------------------------------------===//
 
-
-#ifndef INCLUDE_SHAD_CONFIG_H_
-#define INCLUDE_SHAD_CONFIG_H_
-
-#if defined(__cplusplus)
-
-#include <string>
+#include "gmt/gmt.h"
 
 namespace shad {
 
-constexpr auto kShadVersion = "@PACKAGE_VERSION@";
-constexpr auto kShadVersionLong = "@PACKAGE_VERSION@";
+extern int main(int argc, char* argv[]);
 
-constexpr unsigned    kShadVersionMajor = @SHAD_VERSION_MAJOR@;
-constexpr unsigned    kShadVersionMinor = @SHAD_VERSION_MINOR@;
-constexpr unsigned    kShadVersionPatch = @SHAD_VERSION_PATCH@;
+}  // namespace shad
 
-constexpr auto kShadVersionBuild = "@PACKAGE_VERSION@";
-
-constexpr auto kShadPlatform = "@PLATFORM@";
-
-} // namespace shad
-
-#endif  // defined(__cplusplus)
-
-#define SHAD_VERSION "${PACKAGE_VERSION}"
-
-#cmakedefine HAVE_CPP_SIMPLE
-#cmakedefine HAVE_GMT
-#cmakedefine HAVE_TBB
-
-#endif // INCLUDE_SHAD_CONFIG_H_
+extern "C" int gmt_main(uint64_t argc, char* argv[]) {
+  return shad::main(argc, argv);
+}

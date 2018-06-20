@@ -54,7 +54,13 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS
 # include files checks
 
 # library checks:
-if (SHAD_RUNTIME_SYSTEM STREQUAL "TBB")
+if (SHAD_RUNTIME_SYSTEM STREQUAL "CPP_SIMPLE")
+  message(STATUS "Using the default C++ implementation of the Abstract Runtime API.")
+  find_package(Threads REQUIRED)
+  include_directories(${THREADS_PTHREADS_INCLUDE_DIR})
+  set(HAVE_CPP_SIMPLE 1)
+  set(SHAD_RUNTIME_LIB ${CMAKE_THREAD_LIBS_INIT})
+elseif (SHAD_RUNTIME_SYSTEM STREQUAL "TBB")
   message(STATUS "Using Intel Threading Building Blocks (TBB) as backend of the Abstract Runtime API.")
 
   find_package(Threads REQUIRED)
@@ -62,7 +68,13 @@ if (SHAD_RUNTIME_SYSTEM STREQUAL "TBB")
 
   find_package(TBB REQUIRED)
   set(HAVE_TBB 1)
-  set(SHAD_RUNTIME_LIB ${TBB_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+  set(SHAD_RUNTIME_LIB ${CMAKE_THREAD_LIBS_INIT} ${TBB_LIBRARIES})
+elseif (SHAD_RUNTIME_SYSTEM STREQUAL "GMT")
+  message(STATUS "Using Global Threading and Memory (GMT) as backend of the Abstract Runtime API.")
+  find_package(GMT REQUIRED)
+  include_directories(${GMT_INCLUDE_DIR})
+  set(HAVE_GMT 1)
+  set(SHAD_RUNTIME_LIB ${GMT_LIBRARIES})
 else()
   message(FATAL_ERROR "${SHAD_RUNTIME_SYSTEM} is not a supported runtime system.")
 endif()
@@ -111,6 +123,11 @@ endif()
 
 if (SHAD_ENABLE_UNIT_TEST)
   find_package(GTest REQUIRED)
+endif()
+
+if (SHAD_ENABLE_PERFORMANCE_TEST)
+  find_package(benchmark REQUIRED)
+  find_package(Threads REQUIRED)
 endif()
 
 # tools:
